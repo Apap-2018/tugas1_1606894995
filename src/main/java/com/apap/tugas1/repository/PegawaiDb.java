@@ -7,5 +7,5 @@ import com.apap.tugas1.model.PegawaiModel;
 
 @Repository
 public interface PegawaiDb extends JpaRepository<PegawaiModel, Long> {
-
+	PegawaiModel findByNip(String nip);	
 }

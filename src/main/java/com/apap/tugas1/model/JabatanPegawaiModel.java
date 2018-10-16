@@ -23,26 +23,4 @@ public class JabatanPegawaiModel implements Serializable{
 	public void setId(long id) {
 		this.id = id;
 	}
-
-	public JabatanModel getJabatan() {
-		return jabatan;
-	}
-
-	public void setJabatan(JabatanModel jabatan) {
-		this.jabatan = jabatan;
-	}
-
-	public PegawaiModel getPegawai() {
-		return pegawai;
-	}
-
-	public void setPegawai(PegawaiModel pegawai) {
-		this.pegawai = pegawai;
-	}
-
-	@ManyToMany
-	private JabatanModel jabatan;
-	
-	@ManyToMany
-	private PegawaiModel pegawai;
 }

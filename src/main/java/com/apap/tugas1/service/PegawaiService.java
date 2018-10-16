@@ -10,4 +10,5 @@ public interface PegawaiService {
 	void deletePegawai (PegawaiModel pegawai);
 	void updatePegawai (PegawaiModel pegawai);
 	Optional<PegawaiModel> getPegawaiDetailById(Long id);
+	PegawaiModel getPegawaiByNip(String nip);
 }

@@ -1,10 +1,12 @@
 package com.apap.tugas1.model;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,8 +16,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="jabatan")
-public class JabatanModel implements Serializable{
+@Table(name = "jabatan")
+public class JabatanModel implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -32,10 +34,15 @@ public class JabatanModel implements Serializable{
 	
 	@NotNull
 	@Column(name = "gaji_pokok", nullable = false)
-	private double gaji_pokok;
+	private double gajiPokok;
 	
-	@ManyToMany (mappedBy = "jabatan")
-    private Set<JabatanPegawaiModel> jabatanPegawai;
+	@ManyToMany(fetch = FetchType.LAZY,
+		cascade = {
+				CascadeType.PERSIST,
+				CascadeType.MERGE
+		},
+		mappedBy = "jabatanList")
+	private List<PegawaiModel> pegawaiList;
 
 	public long getId() {
 		return id;
@@ -61,19 +68,12 @@ public class JabatanModel implements Serializable{
 		this.deskripsi = deskripsi;
 	}
 
-	public double getGaji_pokok() {
-		return gaji_pokok;
+	public double getGajiPokok() {
+		return gajiPokok;
 	}
 
-	public void setGaji_pokok(double gaji_pokok) {
-		this.gaji_pokok = gaji_pokok;
+	public void setGajiPokok(double gajiPokok) {
+		this.gajiPokok = gajiPokok;
 	}
-
-	public Set<JabatanPegawaiModel> getJabatanPegawai() {
-		return jabatanPegawai;
-	}
-
-	public void setJabatanPegawai(Set<JabatanPegawaiModel> jabatanPegawai) {
-		this.jabatanPegawai = jabatanPegawai;
-	}
+	
 }
