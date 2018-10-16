@@ -9,35 +9,77 @@
         <h1 th:text="'Tambah Pegawai'"></h1>
         <div class="card my-5">
         	<div class="container">
-        		<form th:action="@{/pegawai/tambah}" th:object="${pegawai}" method="POST" style="padding-top:15px">
+        		<form th:action="@{/pegawai/tambah/sukses}" th:object="${pegawai}" method="POST" style="padding-top:15px">
             	<div class="form-group">
             		<label for="nama">Nama :</label>
             		<input type="text" name="nama" class="form-control">
             	</div>
             	<div class="form-group">
-            		<label for="tempat_lahir">Tempat Lahir :</label>
-            		<input type="text" name="tempat_lahir" class="form-control">
+            		<label for="tempatLahir">Tempat Lahir :</label>
+            		<input type="text" name="tempatLahir" class="form-control">
             	</div>
             	<div class="form-group">
-            		<label for="tanggal_lahir">Tanggal Lahir :</label>
-            		<input type="date" name="tanggal_lahir" class="form-control">
+            		<label for="tanggalLahir">Tanggal Lahir :</label>
+            		<input type="date" name="tanggalLahir" class="form-control">
+            	</div>
+            	<div class="form-group">
+            		<label for="tahunMasuk">Tahun Masuk :</label>
+            		<input type="text" name="tahunMasuk" class="form-control">
             	</div>
             	<div class="form-group">
             		<label for="provinsi">Provinsi :</label>
-            		<select class="form-control" th:field="*{id}">
+            		<select class="form-control" id="provinsi">
+            		  <option disabled="disabled" selected="selected" >Pilih Provinsi</option>
 					  <option th:each="prov : ${listOfProvinsi}" 
-					          th:value="${prov.id}" 
+					          th:value="${prov.getId()}" 
 					          th:text="${prov.getNama()}"></option>
 					</select>
+            	</div>
+            	<div class="form-group">
+            		<label for="instansi">Instansi :</label>
+            		<select class="form-control" id="instansi" name="instansi">
+					  <option disabled="disabled" selected="selected" >Pilih Instansi</option>
+					</select>
+            	</div>
+            	<div class="card-body">
+                	<input type="submit" class="btn btn-primary" value="Tambah">
             	</div>
             </form>
         	</div>
             
-            <div class="card-body">
-                <a th:href="@{/}" class="btn btn-primary">Tambah</a>
-            </div>
+            
         </div>
     </div>
+     <script type="text/javascript">
+	$(document).ready(function(){
+		console.log("hey")
+		$('#provinsi').change(function() {
+			valueProv = $(this).val();
+			$.ajax({
+				type: "GET",
+				url: "http://localhost:8080/pegawai/tambah/instansi?provinsi=",
+				data: {
+					'provinsiId' : valueProv
+				},
+				dataType: 'json',
+				success: function(data) {
+					console.log(data);
+					getIns = '';
+					var size = data.length;
+				
+					for (var i = 0; i<size; i++) {
+						getIns+='<option value="'+data[i].id+'">'+data[i].nama+'</option>';
+						console.log(data[i]);
+						console.log(data[i].nama)
+					}
+					console.log(getIns);
+					$('#instansi').append(getIns);
+				}
+			})
+		})
+	});
+</script>
 </div>
+
 </body>
 </html>

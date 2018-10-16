@@ -46,6 +46,11 @@ public class PegawaiServiceImpl implements PegawaiService{
 		return pegawaiDb.findByNip(nip);
 		
 	}
+
+	@Override
+	public List<PegawaiModel> findAllPegawai() {
+		return pegawaiDb.findAll();
+	}
 	
 
 }
