@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apap.tugas1.model.InstansiModel;
+import com.apap.tugas1.model.JabatanModel;
 import com.apap.tugas1.model.PegawaiModel;
 import com.apap.tugas1.model.ProvinsiModel;
 import com.apap.tugas1.service.InstansiService;
+import com.apap.tugas1.service.JabatanService;
 import com.apap.tugas1.service.PegawaiService;
 import com.apap.tugas1.service.ProvinsiService;
 
@@ -32,8 +34,13 @@ public class PegawaiController {
 	@Autowired
 	private InstansiService instansiService;
 	
+	@Autowired
+	private JabatanService jabService;
+	
 	@RequestMapping("/")
 	private String home(Model model) {
+		List<JabatanModel> allJabatan = jabService.findAllJabatan();
+		model.addAttribute("allJabatan",allJabatan);
 		model.addAttribute("title", "Home");
 		return "HomePage";
 	}
@@ -76,6 +83,7 @@ public class PegawaiController {
 		String nipPegawai = generateNip(pegawai);
 		System.out.println(nipPegawai);
 		pegawai.setNip(nipPegawai);
+		model.addAttribute("msg","Pegawai berhasil ditambahkan");
 		return "add";
 	}
 	

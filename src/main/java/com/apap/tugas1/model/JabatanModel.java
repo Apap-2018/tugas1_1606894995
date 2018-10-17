@@ -44,6 +44,14 @@ public class JabatanModel implements Serializable {
 		mappedBy = "jabatanList")
 	private List<PegawaiModel> pegawaiList;
 
+	public List<PegawaiModel> getPegawaiList() {
+		return pegawaiList;
+	}
+
+	public void setPegawaiList(List<PegawaiModel> pegawaiList) {
+		this.pegawaiList = pegawaiList;
+	}
+
 	public long getId() {
 		return id;
 	}

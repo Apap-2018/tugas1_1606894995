@@ -1,5 +1,6 @@
 package com.apap.tugas1.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -37,6 +38,11 @@ public class JabatanServiceImpl implements JabatanService {
 	@Override
 	public Optional<JabatanModel> getJabatanDetailById(Long id) {
 		return jabatanDb.findById(id);
+	}
+
+	@Override
+	public List<JabatanModel> findAllJabatan() {
+		return jabatanDb.findAll();
 	}
 
 }
