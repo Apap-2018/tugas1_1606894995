@@ -91,6 +91,8 @@ public class PegawaiController {
 		return getProv.getInstansiList();
 	}
 	
+	
+	
 	@RequestMapping(value = "/pegawai/tambah/sukses",method = RequestMethod.POST)
 	private String tambahPegawaiSubmit(@ModelAttribute PegawaiModel pegawai, Model model) {
 		System.out.println(pegawai.getNama());

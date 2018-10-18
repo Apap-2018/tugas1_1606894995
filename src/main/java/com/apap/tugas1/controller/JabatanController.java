@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apap.tugas1.model.JabatanModel;
 import com.apap.tugas1.model.PegawaiModel;
@@ -69,6 +70,18 @@ public class JabatanController {
 		jabService.updateJabatan(real);
 		model.addAttribute("msg","Jabatan berhasil diubah");
 		return "add";
+	}
+	
+	@RequestMapping(value = "/jabatan/viewall/list",method = RequestMethod.GET)
+	public @ResponseBody List<JabatanModel> listJabatan() {
+		return jabService.findAllJabatan();
+	}
+	
+	@RequestMapping(value = "/jabatan/viewall")
+	private String viewAllJabatan(Model model) {
+		List<JabatanModel> allJabatan = jabService.findAllJabatan();
+		model.addAttribute("allJabatan",allJabatan);
+		return "ViewAllJabatan.html";
 	}
 	
 	@RequestMapping(value = "/jabatan/hapus",method = RequestMethod.POST)
