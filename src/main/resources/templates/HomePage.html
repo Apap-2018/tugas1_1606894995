@@ -45,6 +45,23 @@
                                     </form>
                                 </div>
                             </div>
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <h2>Lihat Pegawai Termuda & Tertua</h2>
+                                    <form th:method="GET" th:action="@{/pegawai/termuda-tertua}">
+                                        <div class="form-group">
+                                            <label for="instansiInput">Pilih Instansi</label>
+                                            <select class="form-control custom-select" id="instansinInput" name="idInstansi" required>
+                                                <option selected disabled>Pilih Instansi</option>
+                                                <th:block th:each="instansi : ${allInstansi}">
+                                                    <option th:value="${instansi.id}" th:text="${instansi.nama}+' - '+${instansi.getProvinsi().getNama()}"></option>
+                                                </th:block>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Lihat</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

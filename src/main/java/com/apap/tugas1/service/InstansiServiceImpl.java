@@ -1,5 +1,6 @@
 package com.apap.tugas1.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -38,6 +39,11 @@ public class InstansiServiceImpl implements InstansiService{
 	public Optional<InstansiModel> getInstansiDetailById(Long id) {
 		
 		return instansiDb.findById(id);
+	}
+
+	@Override
+	public List<InstansiModel> findAllInstansi() {
+		return instansiDb.findAll();
 	}
 
 }

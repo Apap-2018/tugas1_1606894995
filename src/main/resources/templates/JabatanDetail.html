@@ -22,6 +22,10 @@
                         <th scope="row">Gaji Pokok:</th>
                         <td th:text="'Rp' + ${#numbers.formatInteger(jabatan.getGajiPokok(), 0)}"></td>
                     </tr>
+                    <tr>
+                        <th scope="row">Jumlah Pegawai:</th>
+                        <td th:text="${jabatan.getPegawaiList().size()}"></td>
+                    </tr>
                     
                 </tbody>
             </table>

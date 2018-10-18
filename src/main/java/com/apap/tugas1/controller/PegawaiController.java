@@ -2,6 +2,8 @@ package com.apap.tugas1.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +42,8 @@ public class PegawaiController {
 	@RequestMapping("/")
 	private String home(Model model) {
 		List<JabatanModel> allJabatan = jabService.findAllJabatan();
+		List<InstansiModel> allInstansi = instansiService.findAllInstansi();
+		model.addAttribute("allInstansi",allInstansi);
 		model.addAttribute("allJabatan",allJabatan);
 		model.addAttribute("title", "Home");
 		return "HomePage";
@@ -54,8 +58,22 @@ public class PegawaiController {
 			return "PegawaiDetailPage";
 		}
 		return "error";
-		
-		
+	}
+	@RequestMapping(value = "/pegawai/termuda-tertua", method = RequestMethod.GET)
+	private String tuaMuda(@RequestParam(value = "idInstansi") Long idInstansi, Model model) {
+		List<PegawaiModel> all = pegawaiService.findAllPegawai();
+		InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
+		ArrayList<PegawaiModel> baru = new ArrayList<>();
+		for (PegawaiModel pegawai : all) {
+			if (pegawai.getInstansi().equals(instansi)) {
+				baru.add(pegawai);
+			}
+		}
+		PegawaiModel termuda = Collections.min(baru);
+		PegawaiModel tertua = Collections.max(baru);
+		model.addAttribute("termuda", termuda);
+		model.addAttribute("tertua", tertua);
+		return "TertuaTermuda";
 	}
 	@RequestMapping(value = "/pegawai/tambah")
 	private String tambahPegawai(Model model) {

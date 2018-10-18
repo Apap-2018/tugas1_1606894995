@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{components/BasePage :: basepage}">
+<head>
+    <title id="page-title" th:text="'Detail Pegawai - ' + ${pegawai.getNama()}"></title>
+</head>
+<body>
+<div id="Content" class="container-full-bg">
+    <div class="container vertical-center" style="padding-top: 32px;">
+    	<div class="row">
+    		<div class="col-sm-6">
+    			<h1>Data Pegawai Termuda</h1>
+    			        <div class="card my-5">
+				            <table class="table">
+				                <tbody>
+				                    <tr>
+				                        <th scope="row">NIP</th>
+				                        <td th:text="${termuda.getNip()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Nama</th>
+				                        <td th:text="${termuda.getNama()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tempat Lahir</th>
+				                        <td th:text="${termuda.getTempatLahir()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tanggal Lahir</th>
+				                        <td th:text="${termuda.getTanggalLahir()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tahun Masuk</th>
+				                        <td th:text="${termuda.getTahunMasuk()}"></td>
+				                    </tr>
+				                     <tr>
+				                        <th scope="row">Nama Instansi</th>
+				                        <td th:text="${termuda.getInstansi().getNama()}+' '+${termuda.getInstansi().getProvinsi().getNama()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Jabatan</th>
+				                        <td>
+				                            <ul>
+				                                <li th:each="jabatan : ${termuda.getJabatanList()}">
+				                                    <div th:text="${jabatan.getNama()}"></div>
+				                                </li>
+				                            </ul>
+				                        </td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Gaji</th>
+				                        <td th:text="'Rp' + ${#numbers.formatInteger(termuda.getGaji(), 0)}"></td>
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+    		</div>
+    		<div class="col-sm-6">
+    			<h1>Data Pegawai Tertua</h1>
+    			        <div class="card my-5">
+				            <table class="table">
+				                <tbody>
+				                    <tr>
+				                        <th scope="row">NIP</th>
+				                        <td th:text="${tertua.getNip()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Nama</th>
+				                        <td th:text="${tertua.getNama()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tempat Lahir</th>
+				                        <td th:text="${tertua.getTempatLahir()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tanggal Lahir</th>
+				                        <td th:text="${tertua.getTanggalLahir()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Tahun Masuk</th>
+				                        <td th:text="${tertua.getTahunMasuk()}"></td>
+				                    </tr>
+				                     <tr>
+				                        <th scope="row">Nama Instansi</th>
+				                        <td th:text="${tertua.getInstansi().getNama()}+' '+${tertua.getInstansi().getProvinsi().getNama()}"></td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Jabatan</th>
+				                        <td>
+				                            <ul>
+				                                <li th:each="jabatan : ${tertua.getJabatanList()}">
+				                                    <div th:text="${jabatan.getNama()}"></div>
+				                                </li>
+				                            </ul>
+				                        </td>
+				                    </tr>
+				                    <tr>
+				                        <th scope="row">Gaji</th>
+				                        <td th:text="'Rp' + ${#numbers.formatInteger(tertua.getGaji(), 0)}"></td>
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+    		</div>
+    	</div>
+
+    </div>
+</div>
+</body>
+</html>

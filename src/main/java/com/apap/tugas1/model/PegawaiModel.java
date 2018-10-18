@@ -1,9 +1,13 @@
 package com.apap.tugas1.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -28,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "pegawai")
-public class PegawaiModel implements Serializable {
+public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -105,7 +109,14 @@ public class PegawaiModel implements Serializable {
 			return 0;
 		}
 	};
-	
+	public int calculateUmur() {
+		  Date now = new Date();
+		  DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		  int d1 = Integer.parseInt(formatter.format(tanggalLahir));
+		  int d2 = Integer.parseInt(formatter.format(now));
+		  int age = (d2 - d1) / 10000;   
+		  return age;
+	}
 	public List<JabatanModel> getJabatanList() {
 		return jabatanList;
 	}
@@ -168,6 +179,11 @@ public class PegawaiModel implements Serializable {
 
 	public void setInstansi(InstansiModel instansi) {
 		this.instansi = instansi;
+	}
+	@Override
+	public int compareTo(PegawaiModel o) {
+		int otherPegawai = o.calculateUmur();
+		return this.calculateUmur() - otherPegawai;
 	}
 	
 }
