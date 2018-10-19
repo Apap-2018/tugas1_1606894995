@@ -36,7 +36,7 @@ public class JabatanModel implements Serializable {
 	@Column(name = "gaji_pokok", nullable = false)
 	private double gajiPokok;
 	
-	@ManyToMany(fetch = FetchType.LAZY,
+	@ManyToMany(fetch = FetchType.EAGER,
 		cascade = {
 				CascadeType.PERSIST,
 				CascadeType.MERGE

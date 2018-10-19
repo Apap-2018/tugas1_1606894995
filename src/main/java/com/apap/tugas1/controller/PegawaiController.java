@@ -4,12 +4,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,7 +52,21 @@ public class PegawaiController {
 		model.addAttribute("title", "Home");
 		return "HomePage";
 	}
-	
+	@RequestMapping(value="/pegawai/tambah",method = RequestMethod.POST, params= {"addRow"})
+	private String addRow (@ModelAttribute PegawaiModel pegawai, Model model, BindingResult bindingResult) {
+		if (pegawai.getJabatanList() == null) {
+			pegawai.setJabatanList(new ArrayList());
+		}
+		System.out.println(pegawai.getJabatanList().size());
+		pegawai.getJabatanList().add(new JabatanModel());
+		
+		List<JabatanModel> jab = jabService.findAllJabatan();
+		List<ProvinsiModel> prov = provService.findAllProvinsi();
+		model.addAttribute("listOfProvinsi", prov);
+		model.addAttribute("pegawai", pegawai);
+		model.addAttribute("jabatanList",jab);
+		return "TambahPegawai";
+	}
 	@RequestMapping(value = "/pegawai", method = RequestMethod.GET)
 	private String findPegawai(@RequestParam(value = "nip") String nip, Model model) {
 		PegawaiModel pegawai = pegawaiService.getPegawaiByNip(nip);
@@ -69,8 +87,8 @@ public class PegawaiController {
 				baru.add(pegawai);
 			}
 		}
-		PegawaiModel termuda = Collections.min(baru);
-		PegawaiModel tertua = Collections.max(baru);
+		PegawaiModel termuda = Collections.min(baru,comp);
+		PegawaiModel tertua = Collections.max(baru,comp);
 		model.addAttribute("termuda", termuda);
 		model.addAttribute("tertua", tertua);
 		return "TertuaTermuda";
@@ -78,7 +96,13 @@ public class PegawaiController {
 	@RequestMapping(value = "/pegawai/tambah")
 	private String tambahPegawai(Model model) {
 		PegawaiModel peg = new PegawaiModel();
+		if (peg.getJabatanList()==null) {
+			peg.setJabatanList(new ArrayList());
+		}
+		peg.getJabatanList().add(new JabatanModel());
 		List<ProvinsiModel> prov = provService.findAllProvinsi();
+		List<JabatanModel> jab = jabService.findAllJabatan();
+		model.addAttribute("jabatanList",jab);
 		model.addAttribute("pegawai", peg);
 		model.addAttribute("listOfProvinsi", prov);
 		return "TambahPegawai";
@@ -93,24 +117,28 @@ public class PegawaiController {
 	
 	
 	
-	@RequestMapping(value = "/pegawai/tambah/sukses",method = RequestMethod.POST)
+	@RequestMapping(value = "/pegawai/tambah", method = RequestMethod.POST, params= {"submit"})
 	private String tambahPegawaiSubmit(@ModelAttribute PegawaiModel pegawai, Model model) {
 		System.out.println(pegawai.getNama());
 		System.out.println(pegawai.getTahunMasuk());
 		System.out.println(pegawai.getTempatLahir());
 		System.out.println(pegawai.getTanggalLahir());
 		System.out.println(pegawai.getInstansi().getNama());
+		System.out.println("total jabatanku->"+pegawai.getJabatanList().size());
 		String nipPegawai = generateNip(pegawai);
 		System.out.println(nipPegawai);
 		pegawai.setNip(nipPegawai);
-		model.addAttribute("msg","Pegawai berhasil ditambahkan");
+		pegawaiService.addPegawai(pegawai);
+		String msg = "Pegawai dengan NIP "+nipPegawai+" berhasil ditambahkan";
+		model.addAttribute("msg",msg);
 		return "add";
 	}
+	
+	
 	
 	private String generateNip(PegawaiModel pegawai) {
 		DateFormat df = new SimpleDateFormat("ddMMYY");
 		Date tglLahir = pegawai.getTanggalLahir();
-		System.out.println("hari->"+tglLahir.getDay());
 		String formatted = df.format(tglLahir);
 		System.out.println("date->"+formatted);
 		
@@ -137,4 +165,17 @@ public class PegawaiController {
 		return kodeInstansi+formatted+pegawai.getTahunMasuk()+kodeMasuk;
 		
 	}
+	public static Comparator<PegawaiModel> comp = new Comparator<PegawaiModel>() {
+
+		@Override
+		public int compare(PegawaiModel o1, PegawaiModel o2) {
+			if (o1.calculateUmur()<o2.calculateUmur()) {
+				return -1;
+			}
+			else if (o1.calculateUmur()>o2.calculateUmur()) {
+				return 1;
+			}
+			return 0;
+		}
+	};
 }

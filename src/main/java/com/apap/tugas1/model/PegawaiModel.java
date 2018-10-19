@@ -22,17 +22,21 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "pegawai")
-public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
+public class PegawaiModel implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -54,6 +58,7 @@ public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 	
 	@NotNull
 	@Column(name = "tanggal_lahir")
+	@DateTimeFormat(iso=ISO.DATE)
 	private Date tanggalLahir;
 	
 	@NotNull
@@ -67,7 +72,7 @@ public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 	@JsonIgnore
 	private InstansiModel instansi;
 	
-	@ManyToMany(fetch = FetchType.LAZY,
+	@ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                 CascadeType.PERSIST,
                 CascadeType.MERGE
@@ -80,12 +85,8 @@ public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 	public double getGaji() {
 		double gajiUtama = 0;
 		double tunjangan = this.instansi.getProvinsi().getPresentaseTunjangan();
-		System.out.println(tunjangan);
 		if (jabatanList.size()>1) {
 			JabatanModel max = Collections.max(jabatanList, pegComp);
-			System.out.println(max.getGajiPokok());
-			System.out.println(jabatanList.get(0).getGajiPokok());
-			System.out.println(jabatanList.get(1).getGajiPokok());
 			gajiUtama = max.getGajiPokok() + ((tunjangan / 100) * max.getGajiPokok());
 		}
 		else {
@@ -109,12 +110,13 @@ public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 			return 0;
 		}
 	};
+	
 	public int calculateUmur() {
 		  Date now = new Date();
 		  DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 		  int d1 = Integer.parseInt(formatter.format(tanggalLahir));
 		  int d2 = Integer.parseInt(formatter.format(now));
-		  int age = (d2 - d1) / 10000;   
+		  int age = (d2 - d1)/1000;   
 		  return age;
 	}
 	public List<JabatanModel> getJabatanList() {
@@ -179,11 +181,6 @@ public class PegawaiModel implements Serializable, Comparable<PegawaiModel>{
 
 	public void setInstansi(InstansiModel instansi) {
 		this.instansi = instansi;
-	}
-	@Override
-	public int compareTo(PegawaiModel o) {
-		int otherPegawai = o.calculateUmur();
-		return this.calculateUmur() - otherPegawai;
 	}
 	
 }
