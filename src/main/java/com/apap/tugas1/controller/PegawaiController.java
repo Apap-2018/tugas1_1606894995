@@ -7,8 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,17 +51,111 @@ public class PegawaiController {
 		model.addAttribute("title", "Home");
 		return "HomePage";
 	}
-	@RequestMapping("/pegawai/cari")
-	private String cari(Model model) {
+	
+	
+	@RequestMapping(value = "/pegawai/cari",method = RequestMethod.GET)
+	private  String filter(@RequestParam(value = "idProvinsi", required=false) Optional<String> idProvinsi,
+			@RequestParam(value="idInstansi",  required=false) Optional<String> id_instansi,
+			@RequestParam(value="idJabatan", required=false) Optional<String> id_jabatan,
+			Model model) {
 		List<JabatanModel> allJabatan = jabService.findAllJabatan();
 		List<InstansiModel> allInstansi = instansiService.findAllInstansi();
 		List<ProvinsiModel> allProvinsi = provService.findAllProvinsi();
 		model.addAttribute("allInstansi",allInstansi);
 		model.addAttribute("allProvinsi",allProvinsi);
 		model.addAttribute("allJabatan",allJabatan);
-		model.addAttribute("title", "Home");
+		
+		List<PegawaiModel> allPegawai = pegawaiService.findAllPegawai();
+		List<PegawaiModel> result = new ArrayList<>();
+		if (idProvinsi.isPresent()) {
+			System.out.println("is it even enter this");
+			if (id_instansi.isPresent() && id_jabatan.isPresent()) {
+				//instansi
+				//jabatan
+				//provinsi
+				//instansi, jabatan, provinsi
+				//pke instansi per provinsi aja
+				System.out.println("masuk id instansi and jabatan");
+				List<PegawaiModel> temp = new ArrayList<>();
+				Long idInstansi = Long.parseLong(id_instansi.get());
+				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
+				System.out.println(instansi.getNama());
+				Long idJabatan = Long.parseLong(id_jabatan.get());
+				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
+				System.out.println(jabatan.getNama());
+				temp = pegawaiService.getPegawaiByInstansi(instansi);
+				System.out.println(temp.size());
+				for (PegawaiModel peg : temp) {
+					for (JabatanModel jab : peg.getJabatanList()) {
+						if (jab.equals(jabatan)) {
+							result.add(peg);
+						}
+					}
+				}
+				System.out.println(result.size());
+			}
+			else if (!(id_instansi.isPresent()) && id_jabatan.isPresent()) {
+				//provinsi
+				//jabatan
+				//provinsi & jabatan
+				List<PegawaiModel> temp = new ArrayList<>();
+				Long idProv = Long.parseLong(idProvinsi.get());
+				ProvinsiModel prov = provService.getProvinsiDetailById(idProv).get();
+				for (PegawaiModel peg : allPegawai) {
+					if (peg.getInstansi().getProvinsi().equals(prov)) {
+						temp.add(peg);
+					}
+				}
+				Long idJabatan = Long.parseLong(id_jabatan.get());
+				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
+				for (PegawaiModel peg : temp) {
+					for (JabatanModel jab : peg.getJabatanList()) {
+						if (jab.equals(jabatan)) {
+							result.add(peg);
+						}
+					}
+				}
+			}
+		}
+		else {
+			//jabatan
+			//instansi
+			//jabatan dan instansi-worked
+			if (id_jabatan.isPresent() && id_instansi.isPresent()) {
+				
+				Long idInstansi = Long.parseLong(id_instansi.get());
+				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
+				Long idJabatan = Long.parseLong(id_jabatan.get());
+				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
+				
+			}
+			
+			//jabatan doank
+			else if(id_jabatan.isPresent() && !(id_instansi.isPresent())) {
+				Long idJabatan = Long.parseLong(id_jabatan.get());
+				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
+				for (PegawaiModel peg : allPegawai) {
+					for (JabatanModel jab : peg.getJabatanList()) {
+						if (jab.equals(jabatan)) {
+							result.add(peg);
+						}
+					}
+				}
+			}
+			//instansi doank
+			else if(!(id_jabatan.isPresent()) && id_instansi.isPresent()) {
+				Long idInstansi = Long.parseLong(id_instansi.get());
+				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
+				result = pegawaiService.getPegawaiByInstansi(instansi);
+			}
+			else if(!(id_jabatan.isPresent()) && !(id_instansi.isPresent())) {
+				result = allPegawai;
+			}
+		}
+		model.addAttribute("allData",result);
 		return "CariPegawai";
 	}
+	
 	@RequestMapping(value="/pegawai/tambah",method = RequestMethod.POST, params= {"addRow"})
 	private String addRow (@ModelAttribute PegawaiModel pegawai, Model model, BindingResult bindingResult) {
 		if (pegawai.getJabatanList() == null) {
