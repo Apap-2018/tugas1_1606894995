@@ -52,6 +52,17 @@ public class PegawaiController {
 		model.addAttribute("title", "Home");
 		return "HomePage";
 	}
+	@RequestMapping("/pegawai/cari")
+	private String cari(Model model) {
+		List<JabatanModel> allJabatan = jabService.findAllJabatan();
+		List<InstansiModel> allInstansi = instansiService.findAllInstansi();
+		List<ProvinsiModel> allProvinsi = provService.findAllProvinsi();
+		model.addAttribute("allInstansi",allInstansi);
+		model.addAttribute("allProvinsi",allProvinsi);
+		model.addAttribute("allJabatan",allJabatan);
+		model.addAttribute("title", "Home");
+		return "CariPegawai";
+	}
 	@RequestMapping(value="/pegawai/tambah",method = RequestMethod.POST, params= {"addRow"})
 	private String addRow (@ModelAttribute PegawaiModel pegawai, Model model, BindingResult bindingResult) {
 		if (pegawai.getJabatanList() == null) {
