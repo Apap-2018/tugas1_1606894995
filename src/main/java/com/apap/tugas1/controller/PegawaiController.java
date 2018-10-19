@@ -134,7 +134,45 @@ public class PegawaiController {
 		return "add";
 	}
 	
-	
+	@RequestMapping(value = "/pegawai/ubah")
+	private String ubahPegawai(@RequestParam(value="nip") String nip, Model model) {
+		PegawaiModel real = pegawaiService.getPegawaiByNip(nip);
+		
+		List<ProvinsiModel> prov = provService.findAllProvinsi();
+		List<JabatanModel> jab = jabService.findAllJabatan();
+		model.addAttribute("jabatanList",jab);
+		model.addAttribute("pegawai", real);
+		model.addAttribute("listOfProvinsi", prov);
+		return "UbahPegawai";
+	}
+	@RequestMapping(value="/pegawai/ubah",method = RequestMethod.POST, params= {"addRow"})
+	private String addRowUpdate (@ModelAttribute PegawaiModel pegawai, Model model, BindingResult bindingResult) {
+		if (pegawai.getJabatanList() == null) {
+			pegawai.setJabatanList(new ArrayList());
+		}
+		System.out.println(pegawai.getJabatanList().size());
+		pegawai.getJabatanList().add(new JabatanModel());
+		
+		List<JabatanModel> jab = jabService.findAllJabatan();
+		List<ProvinsiModel> prov = provService.findAllProvinsi();
+		model.addAttribute("listOfProvinsi", prov);
+		model.addAttribute("pegawai", pegawai);
+		model.addAttribute("jabatanList",jab);
+		return "UbahPegawai";
+	}
+	@RequestMapping(value = "/pegawai/ubah", method = RequestMethod.POST, params= {"submit"})
+	private String updatePegawaiSubmit(@ModelAttribute PegawaiModel pegawai, Model model) {
+		PegawaiModel real = pegawaiService.getPegawaiDetailById(pegawai.getId()).get();
+		real.setNama(pegawai.getNama());
+		real.setJabatanList(pegawai.getJabatanList());
+		real.setTahunMasuk(pegawai.getTahunMasuk());
+		real.setTanggalLahir(pegawai.getTanggalLahir());
+		real.setTempatLahir(pegawai.getTempatLahir());
+		pegawaiService.addPegawai(real);
+		String msg = "Pegawai dengan NIP "+real.getNip()+" berhasil diubah";
+		model.addAttribute("msg",msg);
+		return "add";
+	}
 	
 	private String generateNip(PegawaiModel pegawai) {
 		DateFormat df = new SimpleDateFormat("ddMMYY");
