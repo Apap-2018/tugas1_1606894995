@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{components/BasePage :: basepage}">
 <head>
-    <title id="page-title">Home</title>
+<object th:include="components/BasePage :: title" th:remove="tag"></object>
 </head>
 <body>
     <div id="Content" class="container-full-bg">
@@ -35,7 +35,7 @@
                                         <div class="form-group">
                                             <label for="jabatanInput">Pilih Jabatan</label>
                                             <select class="form-control custom-select" id="jabatanInput" name="idJabatan" required>
-                                                <option selected disabled>Pilih Jabatan</option>
+                                                <option selected disabled >Pilih Jabatan</option>
                                                 <th:block th:each="jabatan : ${allJabatan}">
                                                     <option th:value="${jabatan.id}" th:text="${jabatan.nama}"></option>
                                                 </th:block>

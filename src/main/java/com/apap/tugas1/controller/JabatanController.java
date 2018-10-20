@@ -40,6 +40,7 @@ public class JabatanController {
 	private String tambahJabatan(Model model) {
 		JabatanModel jab = new JabatanModel();
 		model.addAttribute("jabatan",jab);
+		model.addAttribute("title", "Tambah Jabatan");
 		return "TambahJabatan";
 	}
 	
@@ -47,6 +48,7 @@ public class JabatanController {
 	private String tambahJabatanSubmit(@ModelAttribute JabatanModel jabatan, Model model) {
 		jabService.addJabatan(jabatan);
 		model.addAttribute("msg","Jabatan berhasil ditambahkan");
+		model.addAttribute("title", "Sukses");
 		return "add";
 	}
 	
@@ -57,6 +59,7 @@ public class JabatanController {
 		jabatan.setId(old.getId());
 		model.addAttribute("jabatan",jabatan);
 		model.addAttribute("oldJab", old);
+		model.addAttribute("title", "Ubah Detail Jabatan");
 		return "UpdateJabatan.html";
 		
 	}
@@ -69,6 +72,7 @@ public class JabatanController {
 		real.setGajiPokok(jabatan.getGajiPokok());
 		jabService.updateJabatan(real);
 		model.addAttribute("msg","Jabatan berhasil diubah");
+		model.addAttribute("title", "Sukses");
 		return "add";
 	}
 	
@@ -81,7 +85,8 @@ public class JabatanController {
 	private String viewAllJabatan(Model model) {
 		List<JabatanModel> allJabatan = jabService.findAllJabatan();
 		model.addAttribute("allJabatan",allJabatan);
-		return "ViewAllJabatan.html";
+		model.addAttribute("title", "Lihat Semua Jabatan");
+		return "ViewAllJabatan";
 	}
 	
 	@RequestMapping(value = "/jabatan/hapus",method = RequestMethod.POST)
@@ -95,6 +100,7 @@ public class JabatanController {
 		else {
 			model.addAttribute("msg", "Jabatan tidak berhasil dihapus karena ada pegawai yang memiliki jabatan ini");
 		}
+		model.addAttribute("title", "Hapus");
 		return "add";
 	}
 }

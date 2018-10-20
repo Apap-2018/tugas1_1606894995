@@ -64,16 +64,14 @@ public class PegawaiController {
 		model.addAttribute("allInstansi",allInstansi);
 		model.addAttribute("allProvinsi",allProvinsi);
 		model.addAttribute("allJabatan",allJabatan);
+		model.addAttribute("title", "Cari Pegawai");
 		
 		List<PegawaiModel> allPegawai = pegawaiService.findAllPegawai();
 		List<PegawaiModel> result = new ArrayList<>();
 		if (idProvinsi.isPresent()) {
 			System.out.println("is it even enter this");
 			if (id_instansi.isPresent() && id_jabatan.isPresent()) {
-				//instansi
-				//jabatan
-				//provinsi
-				//instansi, jabatan, provinsi
+				// ALL instansi, jabatan, provinsi
 				//pke instansi per provinsi aja
 				System.out.println("masuk id instansi and jabatan");
 				List<PegawaiModel> temp = new ArrayList<>();
@@ -116,21 +114,46 @@ public class PegawaiController {
 					}
 				}
 			}
+			else if(id_instansi.isPresent() && !(id_jabatan.isPresent())) { 
+				//provinsi dan instansi
+				System.out.println("provinsi dan instansi");
+				Long idInstansi = Long.parseLong(id_instansi.get());
+				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
+				result = pegawaiService.getPegawaiByInstansi(instansi);
+				
+			}
+			else if(!(id_instansi.isPresent()) && !(id_jabatan.isPresent())) {
+				//just provinsi
+				Long idProv = Long.parseLong(idProvinsi.get());
+				ProvinsiModel prov = provService.getProvinsiDetailById(idProv).get();
+				for (PegawaiModel peg : allPegawai) {
+					if(peg.getInstansi().getProvinsi().equals(prov)) {
+						result.add(peg);
+					}
+				}
+			}
 		}
 		else {
 			//jabatan
 			//instansi
 			//jabatan dan instansi-worked
 			if (id_jabatan.isPresent() && id_instansi.isPresent()) {
-				
+				List<PegawaiModel> temp = new ArrayList<>();
 				Long idInstansi = Long.parseLong(id_instansi.get());
 				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
 				Long idJabatan = Long.parseLong(id_jabatan.get());
 				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
-				
+				temp = pegawaiService.getPegawaiByInstansi(instansi);
+				for (PegawaiModel peg : temp) {
+					for (JabatanModel jab : peg.getJabatanList()) {
+						if (jab.equals(jabatan)) {
+							result.add(peg);
+						}
+					}
+				}
 			}
 			
-			//jabatan doank
+			//jabatan doang
 			else if(id_jabatan.isPresent() && !(id_instansi.isPresent())) {
 				Long idJabatan = Long.parseLong(id_jabatan.get());
 				JabatanModel jabatan = jabService.getJabatanDetailById(idJabatan).get();
@@ -142,14 +165,14 @@ public class PegawaiController {
 					}
 				}
 			}
-			//instansi doank
+			//instansi doang
 			else if(!(id_jabatan.isPresent()) && id_instansi.isPresent()) {
 				Long idInstansi = Long.parseLong(id_instansi.get());
 				InstansiModel instansi = instansiService.getInstansiDetailById(idInstansi).get();
 				result = pegawaiService.getPegawaiByInstansi(instansi);
 			}
 			else if(!(id_jabatan.isPresent()) && !(id_instansi.isPresent())) {
-				result = allPegawai;
+				result = null;
 			}
 		}
 		model.addAttribute("allData",result);
@@ -169,6 +192,7 @@ public class PegawaiController {
 		model.addAttribute("listOfProvinsi", prov);
 		model.addAttribute("pegawai", pegawai);
 		model.addAttribute("jabatanList",jab);
+		model.addAttribute("title", "Tambah Pegawai");
 		return "TambahPegawai";
 	}
 	@RequestMapping(value = "/pegawai", method = RequestMethod.GET)
@@ -195,6 +219,7 @@ public class PegawaiController {
 		PegawaiModel tertua = Collections.max(baru,comp);
 		model.addAttribute("termuda", termuda);
 		model.addAttribute("tertua", tertua);
+		model.addAttribute("title", "Lihat Pegawai Tertua & Termuda");
 		return "TertuaTermuda";
 	}
 	@RequestMapping(value = "/pegawai/tambah")
@@ -209,6 +234,7 @@ public class PegawaiController {
 		model.addAttribute("jabatanList",jab);
 		model.addAttribute("pegawai", peg);
 		model.addAttribute("listOfProvinsi", prov);
+		model.addAttribute("title", "Tambah Pegawai");
 		return "TambahPegawai";
 	}
 	
@@ -229,12 +255,13 @@ public class PegawaiController {
 		System.out.println(pegawai.getTanggalLahir());
 		System.out.println(pegawai.getInstansi().getNama());
 		System.out.println("total jabatanku->"+pegawai.getJabatanList().size());
-		String nipPegawai = generateNip(pegawai);
+		String nipPegawai = pegawaiService.generateNip(pegawai);
 		System.out.println(nipPegawai);
 		pegawai.setNip(nipPegawai);
 		pegawaiService.addPegawai(pegawai);
 		String msg = "Pegawai dengan NIP "+nipPegawai+" berhasil ditambahkan";
 		model.addAttribute("msg",msg);
+		model.addAttribute("title", "Sukses");
 		return "add";
 	}
 	
@@ -247,6 +274,7 @@ public class PegawaiController {
 		model.addAttribute("jabatanList",jab);
 		model.addAttribute("pegawai", real);
 		model.addAttribute("listOfProvinsi", prov);
+		model.addAttribute("title", "Ubah Data Pegawai");
 		return "UbahPegawai";
 	}
 	@RequestMapping(value="/pegawai/ubah",method = RequestMethod.POST, params= {"addRow"})
@@ -262,6 +290,7 @@ public class PegawaiController {
 		model.addAttribute("listOfProvinsi", prov);
 		model.addAttribute("pegawai", pegawai);
 		model.addAttribute("jabatanList",jab);
+		model.addAttribute("title", "Ubah Data Pegawai");
 		return "UbahPegawai";
 	}
 	@RequestMapping(value = "/pegawai/ubah", method = RequestMethod.POST, params= {"submit"})
@@ -275,38 +304,11 @@ public class PegawaiController {
 		pegawaiService.addPegawai(real);
 		String msg = "Pegawai dengan NIP "+real.getNip()+" berhasil diubah";
 		model.addAttribute("msg",msg);
+		model.addAttribute("title", "Sukses");
 		return "add";
 	}
 	
-	private String generateNip(PegawaiModel pegawai) {
-		DateFormat df = new SimpleDateFormat("ddMMYY");
-		Date tglLahir = pegawai.getTanggalLahir();
-		String formatted = df.format(tglLahir);
-		System.out.println("date->"+formatted);
-		
-		Long kodeInstansi = pegawai.getInstansi().getId();
-		System.out.println("kode instansi->"+kodeInstansi);
-		
-		int idAkhir = 0;
-		for (PegawaiModel peg : pegawaiService.findAllPegawai()) {
-			if (peg.getTanggalLahir().equals(pegawai.getTanggalLahir()) && peg.getTahunMasuk().equals(pegawai.getTahunMasuk())) {
-				idAkhir+=1;
-			}
-		}
-		idAkhir+=1;
-		
-		String kodeMasuk = "";
-		if (idAkhir<10) {
-			kodeMasuk = "0"+idAkhir;
-		}
-		else {
-			kodeMasuk = Integer.toString(idAkhir);
-		}
-		
-		System.out.println(kodeInstansi+formatted+pegawai.getTahunMasuk()+kodeMasuk);
-		return kodeInstansi+formatted+pegawai.getTahunMasuk()+kodeMasuk;
-		
-	}
+	
 	public static Comparator<PegawaiModel> comp = new Comparator<PegawaiModel>() {
 
 		@Override
